@@ -14,6 +14,7 @@ connectDB()
   .then(() => console.log("Database connected"))
   .catch((err) => console.error("DB Error:", err));
 
+  app.use("/webhooks", express.raw({ type: "*/*" }));
 // Middlewares
 app.use(cors());
 app.use(express.json());
