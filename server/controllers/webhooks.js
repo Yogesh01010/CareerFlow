@@ -1,9 +1,11 @@
-import { Webhook } from "svix";
-import User from "../models/User.js"
+// import { Webhook } from "svix";
+const {Webhook} = require("svix")
+// import User from "../models/User.js"
+const User = require('../models/User.js')
 
 //API Controller Function to Manage Clerk User with database
 
-export const clerkWebhooks = async (req , res) => {
+ const clerkWebhooks = async (req , res) => {
     console.log("okay")
     try {
 
@@ -11,7 +13,7 @@ export const clerkWebhooks = async (req , res) => {
          const whook = new Webhook (process.env.CLERK_WEBHOOK_SECRET)
 
          //Verifying  Headers
-         await whook.verify(JSON.stringify(req.body),{
+         const events =  whook.verify(JSON.stringify(req.body),{
             "svix-id":req.headers[svix-id],
             "svix-timestamp" : req.headers["svix-timestamp"],
             "svix-signature" : req.headers["svix-signature"]
@@ -64,3 +66,5 @@ export const clerkWebhooks = async (req , res) => {
         res.json({success:false,message:'Webhooks Error'})
     }
 }
+
+module.exports = clerkWebhooks;
