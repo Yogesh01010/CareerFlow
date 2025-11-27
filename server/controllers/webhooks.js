@@ -13,7 +13,7 @@ const clerkWebhooks = async (req, res) => {
         const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
 
         //Verifying  Headers
-        const payload = req.rawBody || JSON.stringify(req.body);
+        const payload = req.body;
 
         // Correct header access
         const events = whook.verify(payload, {
