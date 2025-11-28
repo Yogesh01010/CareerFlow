@@ -9,13 +9,18 @@ const clerkWebhooks = require("./controllers/webhooks.js");
 // Initialize Express
 const app = express();
 
-// Connect to database
+// Connect to database (runs on cold start)
 connectDB()
   .then(() => console.log("Database connected"))
   .catch((err) => console.error("DB Error:", err));
 
-  app.use("/webhooks", express.raw({ type: "*/*" }));
-// Middlewares
+// ⚠️ Webhook route needs raw body, and MUST NOT go through express.json()
+app.post("/webhooks",
+  express.raw({ type: "*/*" }), // or "application/json" depending on Clerk setup
+  clerkWebhooks
+);
+
+// Global middlewares for other routes
 app.use(cors());
 app.use(express.json());
 
@@ -26,15 +31,9 @@ app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-app.post("/webhooks", clerkWebhooks);
-
-// Port
-const PORT = process.env.PORT || 5001;
-
-// Sentry
+// Sentry error handler
 Sentry.setupExpressErrorHandler(app);
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// ❌ No app.listen on Vercel
+// ✅ Export express app as handler
+module.exports = app;
